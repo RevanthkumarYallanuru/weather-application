@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>weather report</title>
+<style>
+    *
+    {
+       
+    }
+    .card
+    {
+        width: 90%;
+        max-width: 470px;
+        color: #fff;
+        background:linear-gradient(135deg,#555,#54ceb9);
+        margin:100px auto 0;
+        border-radius: 20px;
+        padding: 40px 35px;
+        text-align: center;
+
+    }
+    .search
+    {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+    }
+
+    .search input
+    {
+        border: 0;
+        outline: 0;
+        background: #ebfffc;
+        color: #555;
+        padding: 10px 25px;
+        height: 60px;
+        border-radius:30px ; 
+        flex:1;
+        margin-right: 16px;
+        font-size: 18px;
+
+    }
+    .search button
+    {
+     border: 0;   
+     outline: 0;
+     background:#ebfffc;
+     border-radius: 50%;
+     width: 60px;
+     height: 60px;
+     cursor: pointer;
+
+    }
+    .search button img
+    {
+        width: 16px;
+    }
+    .weathericon
+    {
+        width: 170px;
+        margin-top: 30px;
+
+         
+    }
+    .weather h1 
+    {
+        font-size: 88px;
+        font-weight: 500;
+    }
+    .weather h2 
+    {
+        font-size: 45px;
+        font-weight: 400;
+        margin-top: -10px;
+
+    }
+    .weather h1 
+    {
+        font-size: 88px;
+        font-weight: 500;
+    }
+
+    .details
+    {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+       margin-top: 50px;
+    }
+     .col 
+     {
+        display: flex;
+        align-items: center;
+        text-align: left;
+
+     }
+     .col img 
+     {
+        width: 40px;
+        margin-right: 10px;
+     }
+
+     .humidity, .wind
+     {
+        font-size: 28px;
+        margin-top: -6px;
+     }
+     .row
+        {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            height: 100px;
+            width: 100%;
+            color: rgb(255, 255, 255);
+            padding-top: 15px;
+        }
+        .row h3
+        {
+            font-size: 30px;
+            margin-top:5px;
+        }
+
+        .weather
+        {
+            display: none;
+        }
+</style>
+</head>
+<body>
+    <div class="card">
+        <div class="row">
+            <h4 >Date:<span id="date">00/00/00</span></h4>
+            <h3>Weather Report</h3>
+            <h4 >Time:<span id="time">00:00:00</span></h4>
+        </div>
+        <div class="search">
+            <input type="text" placeholder="enter city name" id="searchip" spellcheck="false">
+            <button><img src="images/search.png" alt=""></button>
+
+        </div>
+        <div class="weather">
+
+            <img src="images/rain.png" class="weathericon">
+            <h1 class="temp">00°C</h1>
+            <h2 class="city"></h2>
+            <div class="details">
+                <div class="col">
+                    <img src="images/humidity.png" alt="">
+                    <div>
+                        <p class="humidity">50%</p>
+                        <p>Humidity</p>
+                        
+                    </div>
+                </div>
+                <div class="col">
+                    <img src="images/wind.png" alt="">
+                    <div>
+                       <p class="wind">15 km/h </p>
+                        <p>wind speed</p>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const apikey='cbf9a62c2925184df839f915aa206cf3';
+        const apiurl="https://api.openweathermap.org/data/2.5/weather?q=";
+        let searchBox=document.querySelector('.search input');
+        let searchBtn=document.querySelector('.search button');
+        const weathericon=document.querySelector(".weathericon");
+        async function checkweather(c)
+        {
+            const response=await fetch(apiurl +c+'&appid=cbf9a62c2925184df839f915aa206cf3&units=metric');
+            if(response.status == 404)
+            {
+                document.querySelector(".weather").style.display='none';
+                alert(' invalid city name');
+            }
+            else
+            {
+                document.querySelector(".weather").style.display='block';
+            }
+            
+            var data=await response.json();
+            console.log(data);
+            document.querySelector('.city').innerHTML=data.name;
+            document.querySelector('.temp').innerHTML=data.main.temp+'°C';
+            document.querySelector('.humidity').innerHTML=data.main.humidity+'%';
+            document.querySelector('.wind').innerHTML=data.wind.speed+'km/h';
+        // time and date indications
+            time();
+        // time and date completely added......
+           
+            if(data.weather[0].main=='Clouds')
+            {
+                weathericon.src="images/clouds.png"
+            }
+            else  if(data.weather[0].main=='Clear')
+            {
+                weathericon.src="images/clear.png"
+            }
+            else  if(data.weather[0].main=='Rain')
+            {
+                weathericon.src="images/rain.png"
+            }
+            else  if(data.weather[0].main=='Drizzle')
+            {
+                weathericon.src="images/drizzle.png"
+            }
+            else  if(data.weather[0].main=='Mist')
+            {
+                weathericon.src="images/mist.png"
+            }
+            document.querySelector(".weather").style.display='block';
+        }
+       searchBtn.addEventListener('click',()=>{
+        checkweather(searchBox.value);
+       });
+       searchBtn.addEventListener('click',time());
+       function time()
+       {
+        let time=new Date();
+        let min= time.getMinutes();
+        let hrs= time.getHours();
+        let sec= time.getSeconds();
+        document.getElementById('time').innerHTML=hrs+':'+min+':'+sec;
+        let day=time.getDate();
+        let mon=time.getMonth()+1;
+        let yea=time.getFullYear();
+        document.getElementById('date').innerHTML=day+'/'+mon+'/'+yea;
+
+       }
+       time();
+
+    </script>
+</body>
+</html>
